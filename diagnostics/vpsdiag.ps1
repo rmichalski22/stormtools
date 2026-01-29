@@ -1,14 +1,14 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    VPS Performance Diagnostics Tool
+    Storm Server Hosting - Performance Diagnostics Tool
     
 .DESCRIPTION
     Interactive PowerShell script to collect comprehensive system performance
-    statistics and diagnostics for Windows Server VPS environments.
+    statistics and diagnostics for Windows Server environments.
     
 .NOTES
-    Author: VPS Hosting Support
+    Author: Storm Server Hosting
     Version: 1.0
     Requires: PowerShell 5.1 or later, Administrator privileges
 #>
@@ -21,7 +21,7 @@ $ErrorActionPreference = "Continue"
 
 # Global variables
 $script:DiagnosticsData = @{}
-$script:OutputPath = "$env:TEMP\VPS-Diagnostics"
+$script:OutputPath = "$env:USERPROFILE\Desktop\Storm-Diagnostics"
 $script:Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $script:ServerName = $env:COMPUTERNAME
 
@@ -846,7 +846,7 @@ function New-HTMLReport {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>VPS Diagnostics Report - $script:ServerName</title>
+    <title>Storm Server Hosting - Diagnostics Report - $script:ServerName</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -961,7 +961,7 @@ function New-HTMLReport {
 </head>
 <body>
     <div class="container">
-        <h1>VPS Diagnostics Report</h1>
+        <h1>Storm Server Hosting - Diagnostics Report</h1>
         <p class="timestamp">Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')</p>
 "@
 
@@ -1155,7 +1155,7 @@ function Show-MainMenu {
     #>
     
     Clear-Host
-    Write-Header "VPS Performance Diagnostics Tool"
+    Write-Header "Storm Server Hosting - Performance Diagnostics Tool"
     Write-ColorOutput "Server: $script:ServerName" "Cyan"
     Write-ColorOutput "Current Time: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" "Cyan"
     Write-Host ""
@@ -1221,11 +1221,11 @@ Clear-Host
 Write-Host ""
 Write-ColorOutput "+===============================================================+" "Cyan"
 Write-ColorOutput "|                                                           |" "Cyan"
-Write-ColorOutput "|        VPS PERFORMANCE DIAGNOSTICS TOOL v1.0              |" "Cyan"
+Write-ColorOutput "|     STORM SERVER HOSTING - DIAGNOSTICS TOOL v1.0         |" "Cyan"
 Write-ColorOutput "|                                                           |" "Cyan"
 Write-ColorOutput "+===============================================================+" "Cyan"
 Write-Host ""
-Write-ColorOutput "This tool will collect comprehensive diagnostics about your VPS" "White"
+Write-ColorOutput "This tool will collect comprehensive diagnostics about your server" "White"
 Write-ColorOutput "and generate a report that you can upload to your support ticket." "White"
 Write-Host ""
 
@@ -1338,7 +1338,7 @@ while ($running) {
         "9" {
             # Exit
             Write-Host ""
-            Write-ColorOutput "Thank you for using VPS Diagnostics Tool!" "Green"
+            Write-ColorOutput "Thank you for using Storm Server Hosting Diagnostics Tool!" "Green"
             Write-Host ""
             $running = $false
         }
