@@ -38,10 +38,11 @@ function Write-ColorOutput {
         Writes colored output to console
     #>
     param(
+        [Parameter(Mandatory=$true)]
         [string]$Message,
         [string]$Color = "White"
     )
-    Write-Host $Message -ForegroundColor $Color
+    Write-Host -Object $Message -ForegroundColor $Color
 }
 
 function Write-Header {
@@ -52,9 +53,9 @@ function Write-Header {
     param([string]$Title)
     
     Write-Host ""
-    Write-ColorOutput "═══════════════════════════════════════════════════════════" "Cyan"
+    Write-ColorOutput "===============================================================" "Cyan"
     Write-ColorOutput "  $Title" "Cyan"
-    Write-ColorOutput "═══════════════════════════════════════════════════════════" "Cyan"
+    Write-ColorOutput "===============================================================" "Cyan"
     Write-Host ""
 }
 
@@ -94,7 +95,7 @@ function Get-SystemInformation {
         }
         
         $script:DiagnosticsData.SystemInformation = $systemInfo
-        Write-ColorOutput "[✓] System information collected" "Green"
+        Write-ColorOutput "[OK] System information collected" "Green"
         return $systemInfo
     }
     catch {
@@ -110,7 +111,8 @@ function Get-CPUStatistics {
     #>
     param([int]$SampleCount = 5)
     
-    Write-ColorOutput "[*] Collecting CPU statistics (taking $SampleCount samples)..." "Yellow"
+    $msg = "[*] Collecting CPU statistics (taking $SampleCount samples)..."
+    Write-ColorOutput -Message $msg -Color "Yellow"
     
     try {
         $cpuSamples = @()
@@ -132,7 +134,7 @@ function Get-CPUStatistics {
         }
         
         $script:DiagnosticsData.CPUStatistics = $cpuStats
-        Write-ColorOutput "[✓] CPU statistics collected - Avg: $($cpuStats.AverageCPU)%" "Green"
+        Write-ColorOutput "[OK] CPU statistics collected - Avg: $($cpuStats.AverageCPU)%" "Green"
         return $cpuStats
     }
     catch {
@@ -175,7 +177,7 @@ function Get-MemoryStatistics {
         }
         
         $script:DiagnosticsData.MemoryStatistics = $memoryStats
-        Write-ColorOutput "[✓] Memory statistics collected - Usage: $memoryUsagePercent%" "Green"
+        Write-ColorOutput "[OK] Memory statistics collected - Usage: $memoryUsagePercent%" "Green"
         return $memoryStats
     }
     catch {
@@ -262,7 +264,7 @@ function Get-DiskStatistics {
         }
         
         $script:DiagnosticsData.DiskStatistics = $diskStats
-        Write-ColorOutput "[✓] Disk statistics collected" "Green"
+        Write-ColorOutput "[OK] Disk statistics collected" "Green"
         return $diskStats
     }
     catch {
@@ -328,7 +330,7 @@ function Get-NetworkStatistics {
         }
         
         $script:DiagnosticsData.NetworkStatistics = $networkStats
-        Write-ColorOutput "[✓] Network statistics collected" "Green"
+        Write-ColorOutput "[OK] Network statistics collected" "Green"
         return $networkStats
     }
     catch {
@@ -374,7 +376,7 @@ function Get-TopProcesses {
         }
         
         $script:DiagnosticsData.TopProcesses = $processStats
-        Write-ColorOutput "[✓] Top processes collected" "Green"
+        Write-ColorOutput "[OK] Top processes collected" "Green"
         return $processStats
     }
     catch {
@@ -450,7 +452,7 @@ function Get-ServiceStatus {
         }
         
         $script:DiagnosticsData.ServiceStatus = $serviceStats
-        Write-ColorOutput "[✓] Service status collected" "Green"
+        Write-ColorOutput "[OK] Service status collected" "Green"
         return $serviceStats
     }
     catch {
@@ -492,7 +494,8 @@ function Get-EventLogErrors {
             }
         }
         catch {
-            Write-ColorOutput "[!] Could not retrieve System log errors" "Red"
+            $msg = "Could not retrieve System log errors"
+            Write-ColorOutput -Message $msg -Color "Red"
         }
         
         # Application log errors
@@ -515,7 +518,8 @@ function Get-EventLogErrors {
             }
         }
         catch {
-            Write-ColorOutput "[!] Could not retrieve Application log errors" "Red"
+            $msg = "Could not retrieve Application log errors"
+            Write-ColorOutput -Message $msg -Color "Red"
         }
         
         # Sort by time and take top errors
@@ -528,7 +532,7 @@ function Get-EventLogErrors {
         }
         
         $script:DiagnosticsData.EventLogErrors = $eventLogStats
-        Write-ColorOutput "[✓] Event log errors collected - Found $($errors.Count) errors" "Green"
+        Write-ColorOutput "[OK] Event log errors collected - Found $($errors.Count) errors" "Green"
         return $eventLogStats
     }
     catch {
@@ -591,7 +595,7 @@ function Get-WindowsUpdateStatus {
         }
         
         $script:DiagnosticsData.WindowsUpdateStatus = $updateStatus
-        Write-ColorOutput "[✓] Windows Update status collected" "Green"
+        Write-ColorOutput "[OK] Windows Update status collected" "Green"
         return $updateStatus
     }
     catch {
@@ -664,7 +668,7 @@ function Get-SecuritySoftwareStatus {
         }
         
         $script:DiagnosticsData.SecuritySoftware = $securityStatus
-        Write-ColorOutput "[✓] Security software status collected" "Green"
+        Write-ColorOutput "[OK] Security software status collected" "Green"
         return $securityStatus
     }
     catch {
@@ -728,7 +732,9 @@ function Start-ExtendedMonitoring {
             $samples += $sample
             
             # Display current sample
-            Write-ColorOutput "  [$($currentTime.ToString('HH:mm:ss'))] CPU: $($sample.CPUPercent)% | Available Memory: $($sample.AvailableMemoryMB) MB" "Gray"
+            $timeStr = $currentTime.ToString('HH:mm:ss')
+            $sampleMsg = "  [$timeStr] CPU: $($sample.CPUPercent)% | Available Memory: $($sample.AvailableMemoryMB) MB"
+            Write-ColorOutput -Message $sampleMsg -Color "Gray"
             
             # Wait for next sample (unless it's the last one)
             if ($i -lt $totalSamples) {
@@ -766,8 +772,9 @@ function Start-ExtendedMonitoring {
         $script:DiagnosticsData.ExtendedMonitoring = $monitoringResults
         
         Write-Host ""
-        Write-ColorOutput "[✓] Extended monitoring completed" "Green"
-        Write-ColorOutput "    Average CPU: $($monitoringResults.Statistics.CPU.Average)% (Min: $($monitoringResults.Statistics.CPU.Minimum)%, Max: $($monitoringResults.Statistics.CPU.Maximum)%)" "Cyan"
+        Write-ColorOutput "[OK] Extended monitoring completed" "Green"
+        $avgMsg = "    Average CPU: $($monitoringResults.Statistics.CPU.Average)% (Min: $($monitoringResults.Statistics.CPU.Minimum)%, Max: $($monitoringResults.Statistics.CPU.Maximum)%)"
+        Write-ColorOutput -Message $avgMsg -Color "Cyan"
         Write-ColorOutput "    Average Available Memory: $($monitoringResults.Statistics.AvailableMemoryMB.Average) MB" "Cyan"
         
         return $monitoringResults
@@ -791,13 +798,13 @@ function Export-DiagnosticsReport {
         # Export JSON
         $jsonPath = Join-Path $script:OutputPath "$reportBaseName.json"
         $script:DiagnosticsData | ConvertTo-Json -Depth 10 | Out-File -FilePath $jsonPath -Encoding UTF8
-        Write-ColorOutput "[✓] JSON report exported: $jsonPath" "Green"
+        Write-ColorOutput "[OK] JSON report exported: $jsonPath" "Green"
         
         # Generate HTML report
         $htmlPath = Join-Path $script:OutputPath "$reportBaseName.html"
-        $html = Generate-HTMLReport
+        $html = New-HTMLReport
         $html | Out-File -FilePath $htmlPath -Encoding UTF8
-        Write-ColorOutput "[✓] HTML report exported: $htmlPath" "Green"
+        Write-ColorOutput "[OK] HTML report exported: $htmlPath" "Green"
         
         # Create compressed archive
         $zipPath = Join-Path $script:OutputPath "$reportBaseName.zip"
@@ -808,17 +815,17 @@ function Export-DiagnosticsReport {
         }
         
         Compress-Archive -Path $jsonPath, $htmlPath -DestinationPath $zipPath -CompressionLevel Optimal
-        Write-ColorOutput "[✓] Compressed archive created: $zipPath" "Green"
+        Write-ColorOutput "[OK] Compressed archive created: $zipPath" "Green"
         
         # Display file sizes
         $zipSize = [math]::Round((Get-Item $zipPath).Length / 1KB, 2)
         Write-Host ""
         Write-ColorOutput "Archive Size: $zipSize KB" "Cyan"
         Write-Host ""
-        Write-ColorOutput "═══════════════════════════════════════════════════════════" "Yellow"
+        Write-ColorOutput "===============================================================" "Yellow"
         Write-ColorOutput "  UPLOAD THIS FILE TO YOUR SUPPORT TICKET:" "Yellow"
         Write-ColorOutput "  $zipPath" "White"
-        Write-ColorOutput "═══════════════════════════════════════════════════════════" "Yellow"
+        Write-ColorOutput "===============================================================" "Yellow"
         Write-Host ""
         
         return $zipPath
@@ -829,7 +836,7 @@ function Export-DiagnosticsReport {
     }
 }
 
-function Generate-HTMLReport {
+function New-HTMLReport {
     <#
     .SYNOPSIS
         Generates an HTML report from collected diagnostics data
@@ -955,7 +962,7 @@ function Generate-HTMLReport {
 <body>
     <div class="container">
         <h1>VPS Diagnostics Report</h1>
-        <p class="timestamp">Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")</p>
+        <p class="timestamp">Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')</p>
 "@
 
     # System Information Section
@@ -1164,7 +1171,7 @@ function Show-MainMenu {
     Write-ColorOutput "  8. View Previous Reports" "White"
     Write-ColorOutput "  9. Exit" "White"
     Write-Host ""
-    Write-ColorOutput "═══════════════════════════════════════════════════════════" "Cyan"
+    Write-ColorOutput "===============================================================" "Cyan"
 }
 
 function Start-QuickSnapshot {
@@ -1212,11 +1219,11 @@ function Start-FullDiagnostics {
 # Display banner
 Clear-Host
 Write-Host ""
-Write-ColorOutput "╔═══════════════════════════════════════════════════════════╗" "Cyan"
-Write-ColorOutput "║                                                           ║" "Cyan"
-Write-ColorOutput "║        VPS PERFORMANCE DIAGNOSTICS TOOL v1.0              ║" "Cyan"
-Write-ColorOutput "║                                                           ║" "Cyan"
-Write-ColorOutput "╚═══════════════════════════════════════════════════════════╝" "Cyan"
+Write-ColorOutput "+===============================================================+" "Cyan"
+Write-ColorOutput "|                                                           |" "Cyan"
+Write-ColorOutput "|        VPS PERFORMANCE DIAGNOSTICS TOOL v1.0              |" "Cyan"
+Write-ColorOutput "|                                                           |" "Cyan"
+Write-ColorOutput "+===============================================================+" "Cyan"
 Write-Host ""
 Write-ColorOutput "This tool will collect comprehensive diagnostics about your VPS" "White"
 Write-ColorOutput "and generate a report that you can upload to your support ticket." "White"
@@ -1252,7 +1259,7 @@ while ($running) {
             # Custom Extended Monitoring
             $script:DiagnosticsData = @{}
             Write-Host ""
-            $duration = Read-Host "Enter monitoring duration in minutes (e.g., 60)"
+            $duration = Read-Host 'Enter monitoring duration in minutes (e.g., 60)'
             if ($duration -match '^\d+$') {
                 $durationInt = [int]$duration
                 Get-SystemInformation
@@ -1260,7 +1267,8 @@ while ($running) {
                 Get-TopProcesses -TopCount 15
                 Export-DiagnosticsReport
             } else {
-                Write-ColorOutput "[!] Invalid duration. Please enter a number." "Red"
+                $msg = "Invalid duration. Please enter a number."
+                Write-ColorOutput -Message $msg -Color "Red"
             }
             Write-Host ""
             Write-ColorOutput "Press any key to return to main menu..." "Gray"
@@ -1316,7 +1324,7 @@ while ($running) {
                 Write-Host ""
                 foreach ($report in $reports) {
                     $sizeMB = [math]::Round($report.Length / 1MB, 2)
-                    Write-ColorOutput "  • $($report.Name) - $sizeMB MB - Created: $($report.CreationTime)" "White"
+                    Write-ColorOutput "  - $($report.Name) - $sizeMB MB - Created: $($report.CreationTime)" "White"
                 }
                 Write-Host ""
                 Write-ColorOutput "Reports location: $script:OutputPath" "Cyan"
@@ -1335,7 +1343,8 @@ while ($running) {
             $running = $false
         }
         default {
-            Write-ColorOutput "[!] Invalid choice. Please select 1-9." "Red"
+            $msg = "Invalid choice. Please select 1-9."
+            Write-ColorOutput -Message $msg -Color "Red"
             Start-Sleep -Seconds 2
         }
     }
